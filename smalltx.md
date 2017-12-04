@@ -86,7 +86,7 @@ Its size is 129 bytes:
 13. 4 bytes for nlocktime
 
 ## How to obtain a small *standard* transaction?
-Some consideration:
+Some considerations:
 - a standard transaction must have at least one input and one output. Thus the small transaction will have one input and one output.
 - the transaction has to be mined, so it has to spend a UTXO with some bitcoin locked in.
 - the unlocking script must be the smallest possible, so P2PK is preferred to P2PKH because in the latter case, in addition to the signature, one has to provide also the public key (34 bytes).
@@ -109,7 +109,8 @@ Now there is still only one field that could be shrinked: the signature. Infact 
 The idea is to try different nonces in order to find a smaller DER encoded signatures.
 Generating multiple nonces doesn't have to be expensive, one can generate the first in the a standard way and then derive the next ones deterministically.
 
-In the following it will be used an approximation: `order = 2**256`. For instance `P(r < 2**255) != 1/2`, infact `P(r < 2**255) > P(r >= 2**255)` since `r` cannot assume values in `[order..2**256-1]`. So the following results despite being *extremely* close to the true results in reality they are slightly overestimating them.
+In the following it will be used an approximation: `order = 2**256`. For instance `P(r < 2**255) != 1/2`, infact `P(r < 2**255) > P(r >= 2**255)` since `r` cannot assume values in `[order..2**256-1]`. 
+So, despite being *extremely* close to the true results, in reality the following results are slightly overestimating the true ones.
 
 Compute the cumulative distribution
 ```
