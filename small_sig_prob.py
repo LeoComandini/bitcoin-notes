@@ -15,74 +15,69 @@ def drop_bytes_to_int(inp, n):
     return int.from_bytes((inp.to_bytes(32, "big")[n:]), "big")
 
 
-print("\n1. Probability of having the n-th byte below 0x80")
-print("  n | probability ")
-print(" ---|-------------")
-p_no_00 = []
+# Step 1: P(n-th byte strictly below 0x80)
+P1 = []
 for i in range(32):
-    p = 2**(8*(32-i)-1) / (drop_bytes_to_int(ec_order, i) - 1)
-    if p > 1:
-        p = 1
-    p_no_00 += [p]
-    padding = " " if len(str(i + 1)) < 2 else ""
-    print(" " + padding + str(i + 1) + " | " + str(p))
-
-
-print("\n2. Probability of having the n-th byte equal to 0x00")
-print("  n | probability ")
-print(" ---|-------------")
-p_start_00 = []
+    P1 += [min(1, 2 ** (8 * (32 - i) - 1) / (drop_bytes_to_int(ec_order, i) - 1))]
+# Step 2: P(n-th byte equal t0 0x00)
+P2 = []
 for i in range(32):
-    p = 2**(8*(32-i-1)) / (drop_bytes_to_int(ec_order, i) - 1)
-    p_start_00 += [p]
-    padding = " " if len(str(i + 1)) < 2 else ""
-    print(" " + padding + str(i + 1) + " | " + str(p))
-
-
-print("\n3. Probability of having an int encoded in n or less bytes")
-print("  n | probability ")
-print(" ---|-------------")
-p_cum = []
-p_cum += [1]
-print(" " + str(33) + " | " + str(1))
+    P2 += [2 ** (8 * (32 - i - 1)) / (drop_bytes_to_int(ec_order, i) - 1)]
+# Step 3: P(int encoded in n or less bytes), i.e. cumulative distribution
+P3 = [1]
 for i in range(32):
     tot = 1
     for j in range(i):
-        tot *= p_start_00[j]
-    p = p_no_00[i] * tot
-    p_cum += [p]
-    padding = " " if len(str(32 - i)) < 2 else ""
-    print(" " + padding + str(32 - i) + " | " + str(p))
-p_cum += [1 / ec_order]
-print(" " + " " + str(0) + " | " + str(p_cum[-1]))
-
-
-print("\n4. Probability of having an int encoded in n bytes")
-print("  n | probability ")
-print(" ---|-------------")
-p_dist = []
+        tot *= P2[j]
+    P3 += [P1[i] * tot]
+P3 += [0]
+# Step 4: P(int encoded in n bytes)
+P4 = []
 for i in range(33):
-    p = p_cum[i] - p_cum[i+1]
-    p_dist += [p]
-    padding = " " if len(str(33 - i)) < 2 else ""
-    print(" " + padding + str(33 - i) + " | " + str(p))
-
-
-print("\n5. Probability of having a signature encoded in n bytes")
-print("  n | probability ")
-print(" ---|-------------")
-p_sig = []
-for i in range(67):
+    P4 += [P3[i] - P3[i + 1]]
+# Step 5: P(signature encoded in n bytes)
+P5 = []
+for i in range(66):
     tot = 0
-    start = max(i - 32, 0)
-    end = i + 1
-    for j in range(start, end):
-        first = j
-        second = end - 1 - j
-        if first > 32 or second < 0:
-            tot += 0
-        else:
-            tot += p_dist[first] * p_dist[second]
-    p_sig += [tot]
+    for j in range(i + 1):
+        tot += (0 if j > 32 else P4[j]) * (0 if i - j < 0 or i - j > 32 else P4[i - j])
+    P5 += [tot]
+
+
+# Print results
+print("\nExact probabilities of having a DER encoded signature of a certain length")
+print("________________________________________")
+print("Step 1: P(n-th byte strictly below 0x80)")
+print(" n | P")
+print("-------")
+for i in range(len(P1)):
+    padding = " " if len(str(i + 1)) < 2 else ""
+    print(padding + str(i + 1) + " | " + str(P1[i]))
+print("________________________________________")
+print("Step 2: P(n-th byte equal t0 0x00)")
+print(" n | P")
+print("-------")
+for i in range(len(P2)):
+    padding = " " if len(str(i + 1)) < 2 else ""
+    print(padding + str(i + 1) + " | " + str(P2[i]))
+print("________________________________________")
+print("Step 3: P(int encoded in n or less bytes), i.e. cumulative distribution")
+print(" n | P")
+print("-------")
+for i in range(len(P3)):
+    padding = " " if len(str(33 - i)) < 2 else ""
+    print(padding + str(33 - i) + " | " + str(P3[i]))
+print("________________________________________")
+print("Step 4: P(int encoded in n bytes)")
+print(" n | P")
+print("-------")
+for i in range(len(P4)):
+    padding = " " if len(str(33 - i)) < 2 else ""
+    print(padding + str(33 - i) + " | " + str(P4[i]))
+print("________________________________________")
+print("Step 5: P(signature encoded in n bytes)")
+print(" n | P")
+print("-------")
+for i in range(len(P5)):
     padding = " " if len(str(73 - i)) < 2 else ""
-    print(" " + padding + str(73 - i) + " | " + str(tot))
+    print(padding + str(73 - i) + " | " + str(P5[i]))

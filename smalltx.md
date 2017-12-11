@@ -3,38 +3,9 @@ Create small transactions that are also relayed by bitcoin nodes.
 
 ## A sent small transaction
 
-Extract the transaction from the blockchain
+Extract the transaction with `txid = 3419cbc51cec42d4f55d4147d0c1cef54fbdabddf4384270e6e93970b2496f74` from the blockchain.
 
-```
-$ gettransaction 3419cbc51cec42d4f55d4147d0c1cef54fbdabddf4384270e6e93970b2496f74
-{
-  "amount": 0.00000000,
-  "fee": -0.00050000,
-  "confirmations": 1,
-  "blockhash": "00000000000000000007d491e5ff5d33f4df80bdbc26e0c8f4e140c85783deac",
-  "blockindex": 133,
-  "blocktime": 1512383418,
-  "txid": "3419cbc51cec42d4f55d4147d0c1cef54fbdabddf4384270e6e93970b2496f74",
-  "walletconflicts": [
-  ],
-  "time": 1512382225,
-  "timereceived": 1512382225,
-  "bip125-replaceable": "no",
-  "details": [
-    {
-      "account": "",
-      "category": "send",
-      "amount": 0.00000000,
-      "vout": 0,
-      "fee": -0.00050000,
-      "abandoned": false
-    }
-  ],
-  "hex": "0200000001017a28f3d62d98803174bd1ba3827c62e4ccb28b4aa23aa5c7bec74301005f1b0000000044433040022002aedaad7897022be857509bbf753d5c05d6c20092cf5088413f31d6ff661f0b021c57e00a637102d8223360b6797d0bb33c2dfc4504c30d0c4ced29ddb301ffffffff010000000000000000016a00000000"
-}
-```
-
-Decode the raw transaction
+Decode the corresponding raw transaction
 
 ```
 $ decoderawtransaction 0200000001017a28f3d62d98803174bd1ba3827c62e4ccb28b4aa23aa5c7bec74301005f1b0000000044433040022002aedaad7897022be857509bbf753d5c05d6c20092cf5088413f31d6ff661f0b021c57e00a637102d8223360b6797d0bb33c2dfc4504c30d0c4ced29ddb301ffffffff010000000000000000016a00000000
@@ -145,7 +116,8 @@ P(len(encoded sig) = 69 bytes) = 2 * P(33) * P(29) + 2 * P(32) * P(30) + P(31) *
 P(len(encoded sig) = 68 bytes) = 2 * P(33) * P(28) + 2 * P(32) * P(29) + 2 * P(31) * P(30) = ab**5 + 2*a**2*b**5 + 2*a**2*b**5 = b**5*(a + 4*a**2)
 ...
 P(len(encoded sig) = 73-n bytes) = | 1/4                    if n = 0
-                                   | b**n*(a + (n-1)*a**2)  if n = 1, 2, ..., 71
+                                   | b**n*(a + (n-1)*a**2)  if n = 1,  ..., 32
+                                   | b**n*(65-n)*a**2       if n = 33, ..., 65
 ```
 
 Resuming:
