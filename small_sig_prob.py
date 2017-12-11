@@ -81,3 +81,29 @@ print("-------")
 for i in range(len(P5)):
     padding = " " if len(str(73 - i)) < 2 else ""
     print(padding + str(73 - i) + " | " + str(P5[i]))
+
+
+"""
+# create tables to insert in the .md 
+print("\n| n | P(n-th byte strictly below 0x80)| P(n-th byte equal t0 0x00) |")
+print("| --- | --- | --- |")
+for i in range(32):
+    print("| " + str(i + 1) + " | " + str(P1[i]) + " |" + str(P2[i]) + " |")
+print("\n| n | P(int encoded in n or less bytes) | P(int encoded in n bytes) |")
+print("| --- | --- | --- |")
+for i in range(33):
+    print("| " + str(33 - i) + " | " + str(P3[i]) + " |" + str(P4[i]) + " |")
+print("| " + str(0) + " | " + str(P3[33]) + " |" + "-" + " |")
+print("\n| n | true P(signature encoded in n bytes) | approx P(signature encoded in n bytes) |")
+print("| --- | --- | --- |")
+a = 255 / 2
+b = 1 / 256
+for i in range(66):
+    if i == 0:
+        approx = 1/4
+    elif i in range(1, 33):
+        approx = b**i * (a + (i - 1) * a**2)
+    else:
+        approx = b**i * (65-i) * a**2
+    print("| " + str(73 - i) + " | " + str(P5[i]) + " | " + str(approx) + " |")
+"""
