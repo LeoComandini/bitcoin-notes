@@ -80,8 +80,8 @@ Now there is still only one field that could be shrinked: the signature. Infact 
 The idea is to try different nonces in order to find a smaller DER encoded signatures.
 Generating multiple nonces doesn't have to be expensive, one can generate the first in the a standard way and then derive the next ones deterministically.
 
-In the following it will be used an approximation: `order = 2**256`. For instance `P(r < 2**255) != 1/2`, infact `P(r < 2**255) > P(r >= 2**255)` since `r` cannot assume values in `[order..2**256-1]`. 
-So, despite being *extremely* close to the true results, in reality the following results are slightly overestimating the true ones.
+In the following it will be used an **approximation**: `order = 2**256`. For instance `P(r < 2**255) != 1/2`, infact `P(r < 2**255) > P(r >= 2**255)` since `r` cannot assume values in `[order..2**256-1]`. 
+So, despite being *extremely* close to the true results, in reality the following results are slightly overestimating the true ones (computed [here](exact_probabilities.md)).
 
 Compute the cumulative distribution
 ```
